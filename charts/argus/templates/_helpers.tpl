@@ -99,6 +99,7 @@ Create the name of the service account to use
     secretKeyRef:
       name: {{ .Values.argus.argusExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.djangoSecretKey | quote }}
+{{ if .Values.argus.argusUsernameKey and .Values.argus.argusPasswordKey }}
 - name: ADMIN_USERNAME
   valueFrom:
     secretKeyRef:
@@ -109,13 +110,16 @@ Create the name of the service account to use
     secretKeyRef:
       name: {{ .Values.argus.argusExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.argusPasswordKey | quote }}
-{{ else}}
+{{ end }}
+{{ else }}
 - name: SECRET_KEY
   value: {{ .Values.argus.djangoSecret | quote }}
+{{ if .Values.argus.argusUsername and .Values.argus.argusPassword }}
 - name: ADMIN_USERNAME
   value: {{ .Values.argus.argusUsername | quote }}
 - name: ADMIN_PASSWORD
   value: {{ .Values.argus.argusPassword | quote }}
+{{ end }}
 {{ end }}
 
 {{ if and .Values.argus.databaseExistingSecret (not Values.argus.secretKeys.databaseUrlKey) }}
@@ -129,7 +133,7 @@ Create the name of the service account to use
     secretKeyRef:
       name: {{ .Values.argus.databaseExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.databasePasswordKey | quote }}
-{{ else if and (not Values.argus.databaseExistingSecret) (not ) .Values.argus.secretKeys.databaseUrlKey }}
+{{ else if and (not Values.argus.databaseExistingSecret) (not .Values.argus.secretKeys.databaseUrlKey) }}
 - name: DATABASE_USERNAME
   value: {{ .Values.argus.databaseUsername | quote }}
 - name: DATABASE_PASSWORD
