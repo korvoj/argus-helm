@@ -57,9 +57,9 @@ spec:
               containerPort: {{ .Values.argus.port }}
               protocol: TCP
           livenessProbe:
-            {{- toYaml .Values.livenessProbeArgus | nindent 12 }}
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
-            {{- toYaml .Values.readinessProbeArgus | nindent 12 }}
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
           {{ if or .Values.argus.djangoSettingsModuleConfigMap .Values.argus.djangoLoggingModuleConfigMap }}
           volumeMounts:
           {{ end }}
@@ -81,8 +81,6 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: ["/cmd-dbqueue.sh"]
-          livenessProbe:
-            {{- toYaml .Values.livenessProbeDBWorker | nindent 12 }}
           {{ if or .Values.argus.djangoSettingsModuleConfigMap .Values.argus.djangoLoggingModuleConfigMap }}
           volumeMounts:
           {{ end }}

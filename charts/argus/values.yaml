@@ -55,25 +55,15 @@ ingress:
   #    hosts:
   #      - argus.local
 
-readinessProbeArgus:
+readinessProbe:
   httpGet:
     path: /
     port: http
 
-livenessProbeArgus:
+livenessProbe:
   httpGet:
     path: /
     port: http
-
-livenessProbeDBWorker:
-  exec:
-    command:
-    - /bin/sh
-    - -c
-    - pgrep -x django-admin
-  initialDelaySeconds: 5
-  periodSeconds: 10
-
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
