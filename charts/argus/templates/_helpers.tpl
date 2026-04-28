@@ -121,8 +121,22 @@ Create the name of the service account to use
   value: {{ .Values.argus.argusPassword | quote }}
 {{ end }}
 {{ end }}
+{{ if .Values.postgresql.enabled }}
+- name: DATABASE_HOST
+  value: {{ .Release.Name }}-postgresql
+{{ else }}
+- name: DATABASE_HOST
+  value: {{ .Values.argus.databaseHost | quote }}
 
-{{ if and .Values.argus.databaseExistingSecret (not Values.argus.secretKeys.databaseUrlKey) }}
+{{ if .Values.argus.databaseExistingSecret }}
+
+{{ if .Values.argus.secretKeys.databaseUrlKey }}
+- name: DATABASE_URL
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.argus.databaseExistingSecret | quote }}
+      key: {{ .Values.argus.secretKeys.databaseUrlKey | quote }}
+{{ else }}
 - name: DATABASE_USERNAME
   valueFrom:
     secretKeyRef:
@@ -133,33 +147,26 @@ Create the name of the service account to use
     secretKeyRef:
       name: {{ .Values.argus.databaseExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.databasePasswordKey | quote }}
-{{ else if and (not Values.argus.databaseExistingSecret) (not .Values.argus.secretKeys.databaseUrlKey) }}
+- name: DATABASE_URL
+  value: postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)
+{{ end }}
+
+{{ else }}
+
+{{ if .Values.argus.databaseUrl }}
+- name: DATABASE_URL
+  value: {{ .Values.argus.databaseUrl | quote }}
+{{ else }}
 - name: DATABASE_USERNAME
   value: {{ .Values.argus.databaseUsername | quote }}
 - name: DATABASE_PASSWORD
   value: {{ .Values.argus.databasePassword | quote }}
-{{ end }}
-
-{{ if .Values.postgresql.enabled }}
-- name: DATABASE_HOST
-  value: {{ .Release.Name }}-postgresql
-{{ else }}
-- name: DATABASE_HOST
-  value: {{ .Values.argus.databaseHost | quote }}
-{{ end }}
-{{ if and .Values.argus.databaseExistingSecret .Values.argus.secretKeys.databaseUrlKey }}
-- name: DATABASE_URL
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Values.argus.databaseExistingSecret | quote }}
-      key: {{ .Values.argus.secretKeys.databaseUrlKey | quote }}
-{{ else if .Values.argus.databaseUrl }}
-- name: DATABASE_URL
-  value: {{ .Values.argus.databaseUrl | quote }}
-{{ else }}
 - name: DATABASE_URL
   value: postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)
+{{ end }}
+
 {{ end }}
+
 {{ if .Values.argus.rtExistingSecret }}
 - name: ARGUS_RT_TOKEN
   valueFrom:
