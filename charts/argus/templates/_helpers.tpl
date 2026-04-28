@@ -117,7 +117,8 @@ Create the name of the service account to use
 - name: ADMIN_PASSWORD
   value: {{ .Values.argus.argusPassword | quote }}
 {{ end }}
-{{ if .Values.argus.databaseExistingSecret }}
+
+{{ if and .Values.argus.databaseExistingSecret (not Values.argus.secretKeys.databaseUrlKey) }}
 - name: DATABASE_USERNAME
   valueFrom:
     secretKeyRef:
@@ -128,7 +129,7 @@ Create the name of the service account to use
     secretKeyRef:
       name: {{ .Values.argus.databaseExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.databasePasswordKey | quote }}
-{{ else }}
+{{ else if and (not Values.argus.databaseExistingSecret) (not ) .Values.argus.secretKeys.databaseUrlKey }}
 - name: DATABASE_USERNAME
   value: {{ .Values.argus.databaseUsername | quote }}
 - name: DATABASE_PASSWORD
