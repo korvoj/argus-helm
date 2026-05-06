@@ -126,6 +126,7 @@ Create the name of the service account to use
 {{ else }}
 - name: DATABASE_HOST
   value: {{ .Values.argus.databaseHost | quote }}
+{{ end }}
 
 {{ if and .Values.argus.databaseExistingSecret .Values.argus.secretKeys.databaseUrlKey }}
 - name: DATABASE_URL
