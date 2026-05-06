@@ -185,62 +185,91 @@ Create the name of the service account to use
   value: {{ .Values.argus.sso.OIDCUsernameKey | quote }}
 - name: SOCIAL_AUTH_OIDC_SCOPE
   value: {{ .Values.argus.sso.OIDCScope | quote }}
-{{ if .Values.argus.sso.existingSecret }}
+
+{{ if and .Values.argus.sso.existingSecret .Values.argus.sso.secretKeys.dataportenKeyKey }}
 - name: SOCIAL_AUTH_DATAPORTEN_KEY
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.sso.existingSecret | quote }}
       key: {{ .Values.argus.sso.secretKeys.dataportenKeyKey | quote }}
+{{ else }}
+- name: SOCIAL_AUTH_DATAPORTEN_KEY
+  value: {{ .Values.argus.sso.dataportenKey | quote }}
+{{ end }}
+
+{{ if and .Values.argus.sso.existingSecret .Values.argus.sso.secretKeys.dataportenSecretKey }}
 - name: SOCIAL_AUTH_DATAPORTEN_SECRET
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.sso.existingSecret | quote }}
       key: {{ .Values.argus.sso.secretKeys.dataportenSecretKey | quote }}
+{{ else }}
+- name: SOCIAL_AUTH_DATAPORTEN_SECRET
+  value: {{ .Values.argus.sso.dataportenSecret | quote }}
+{{ end }}
+
+{{ if and .Values.argus.sso.existingSecret .Values.argus.sso.secretKeys.dataportenEmailKeyKey }}
 - name: SOCIAL_AUTH_DATAPORTEN_EMAIL_KEY
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.sso.existingSecret | quote }}
       key: {{ .Values.argus.sso.secretKeys.dataportenEmailKeyKey | quote }}
+{{ else }}
+- name: SOCIAL_AUTH_DATAPORTEN_EMAIL_KEY
+  value: {{ .Values.argus.sso.dataportenEmailKey | quote }}
+{{ end }}
+
+{{ if and .Values.argus.sso.existingSecret .Values.argus.sso.secretKeys.dataportenEmailSecretKey }}
 - name: SOCIAL_AUTH_DATAPORTEN_EMAIL_SECRET
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.sso.existingSecret | quote }}
       key: {{ .Values.argus.sso.secretKeys.dataportenEmailSecretKey | quote }}
+{{ else }}
+- name: SOCIAL_AUTH_DATAPORTEN_EMAIL_SECRET
+  value: {{ .Values.argus.sso.dataportenEmailSecret | quote }}
+{{ end }}
+
+{{ if and .Values.argus.sso.existingSecret .Values.argus.sso.secretKeys.dataportenFeideKeyKey }}
 - name: SOCIAL_AUTH_DATAPORTEN_FEIDE_KEY
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.sso.existingSecret | quote }}
       key: {{ .Values.argus.sso.secretKeys.dataportenFeideKeyKey | quote }}
+{{ else }}
+- name: SOCIAL_AUTH_DATAPORTEN_FEIDE_KEY
+  value: {{ .Values.argus.sso.dataportenFeideKey | quote }}
+{{ end }}
+
+{{ if and .Values.argus.sso.existingSecret .Values.argus.sso.secretKeys.dataportenFeideSecretKey }}
 - name: SOCIAL_AUTH_DATAPORTEN_FEIDE_SECRET
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.sso.existingSecret | quote }}
       key: {{ .Values.argus.sso.secretKeys.dataportenFeideSecretKey | quote }}
+{{ else }}
+- name: SOCIAL_AUTH_DATAPORTEN_FEIDE_SECRET
+  value: {{ .Values.argus.sso.dataportenFeideSecret | quote }}
+{{ end }}
+
+{{ if and .Values.argus.sso.existingSecret .Values.argus.sso.secretKeys.OIDCKeyKey }}
 - name: SOCIAL_AUTH_OIDC_KEY
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.sso.existingSecret | quote }}
       key: {{ .Values.argus.sso.secretKeys.OIDCKeyKey | quote }}
+{{ else }}
+- name: SOCIAL_AUTH_OIDC_KEY
+  value: {{ .Values.argus.sso.OIDCKey | quote }}
+{{ end }}
+
+{{ if and .Values.argus.sso.existingSecret .Values.argus.sso.secretKeys.OIDCSecretKey }}
 - name: SOCIAL_AUTH_OIDC_SECRET
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.sso.existingSecret | quote }}
       key: {{ .Values.argus.sso.secretKeys.OIDCSecretKey | quote }}
 {{ else }}
-- name: SOCIAL_AUTH_DATAPORTEN_KEY
-  value: {{ .Values.argus.sso.dataportenKey | quote }}
-- name: SOCIAL_AUTH_DATAPORTEN_SECRET
-  value: {{ .Values.argus.sso.dataportenSecret | quote }}
-- name: SOCIAL_AUTH_DATAPORTEN_EMAIL_KEY
-  value: {{ .Values.argus.sso.dataportenEmailKey | quote }}
-- name: SOCIAL_AUTH_DATAPORTEN_EMAIL_SECRET
-  value: {{ .Values.argus.sso.dataportenEmailSecret | quote }}
-- name: SOCIAL_AUTH_DATAPORTEN_FEIDE_KEY
-  value: {{ .Values.argus.sso.dataportenFeideKey | quote }}
-- name: SOCIAL_AUTH_DATAPORTEN_FEIDE_SECRET
-  value: {{ .Values.argus.sso.dataportenFeideSecret | quote }}
-- name: SOCIAL_AUTH_OIDC_KEY
-  value: {{ .Values.argus.sso.OIDCKey | quote }}
 - name: SOCIAL_AUTH_OIDC_SECRET
   value: {{ .Values.argus.sso.OIDCSecret | quote }}
 {{ end }}
