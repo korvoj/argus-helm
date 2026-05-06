@@ -148,6 +148,8 @@ argus:
   databasePassword: ""
   # Optional way to define connection to database, with a url like "postgres://user:password@hostname:port/database".
   # If this is set, it overrides the other database connection settings.
+  # This will also be prioritized over database credentials from secrets (databaseUsernameKey, databasePasswordKey),
+  # but will be overridden by databaseUrlKey.
   databaseUrl: ""
 
   # Available in container as environment variable ARGUS_RT_TOKEN. Not used by default.

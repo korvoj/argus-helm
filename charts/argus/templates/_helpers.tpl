@@ -93,13 +93,17 @@ Create the name of the service account to use
   value: {{ .Values.argus.argusEmail | quote }}
 - name: ARGUS_SEND_NOTIFICATIONS
   value: {{ .Values.argus.sendNotifications | quote }}
-{{ if .Values.argus.argusExistingSecret }}
+{{ if and .Values.argus.argusExistingSecret .Values.argus.secretKeys.djangoSecretKey }}
 - name: SECRET_KEY
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.argusExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.djangoSecretKey | quote }}
-{{ if .Values.argus.argusUsernameKey and .Values.argus.argusPasswordKey }}
+{{ else }}
+- name: SECRET_KEY
+  value: {{ .Values.argus.djangoSecret | quote }}
+{{ end }}
+{{ if and .Values.argus.argusExistingSecret .Values.argus.secretKeys.argusUsernameKey .Values.argus.secretKeys.argusPasswordKey }}
 - name: ADMIN_USERNAME
   valueFrom:
     secretKeyRef:
@@ -110,16 +114,11 @@ Create the name of the service account to use
     secretKeyRef:
       name: {{ .Values.argus.argusExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.argusPasswordKey | quote }}
-{{ end }}
-{{ else }}
-- name: SECRET_KEY
-  value: {{ .Values.argus.djangoSecret | quote }}
-{{ if .Values.argus.argusUsername and .Values.argus.argusPassword }}
+{{ else if .Values.argus.argusUsername and .Values.argus.argusPassword }}
 - name: ADMIN_USERNAME
   value: {{ .Values.argus.argusUsername | quote }}
 - name: ADMIN_PASSWORD
   value: {{ .Values.argus.argusPassword | quote }}
-{{ end }}
 {{ end }}
 {{ if .Values.postgresql.enabled }}
 - name: DATABASE_HOST
@@ -128,46 +127,41 @@ Create the name of the service account to use
 - name: DATABASE_HOST
   value: {{ .Values.argus.databaseHost | quote }}
 
-{{ if .Values.argus.databaseExistingSecret }}
-
-{{ if .Values.argus.secretKeys.databaseUrlKey }}
+{{ if and .Values.argus.databaseExistingSecret .Values.argus.secretKeys.databaseUrlKey }}
 - name: DATABASE_URL
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.databaseExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.databaseUrlKey | quote }}
+{{ else if .Values.argus.databaseUrl }}
+- name: DATABASE_URL
+  value: {{ .Values.argus.databaseUrl | quote }}
 {{ else }}
+{{ if and .Values.argus.databaseExistingSecret .Values.argus.secretKeys.databaseUsernameKey }}
 - name: DATABASE_USERNAME
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.databaseExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.databaseUsernameKey | quote }}
+{{ else }}
+- name: DATABASE_USERNAME
+  value: {{ .Values.argus.databaseUsername | quote }}
+{{ end }}
+{{ if and .Values.argus.databaseExistingSecret .Values.argus.secretKeys.databasePasswordKey }}
 - name: DATABASE_PASSWORD
   valueFrom:
     secretKeyRef:
       name: {{ .Values.argus.databaseExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.databasePasswordKey | quote }}
-- name: DATABASE_URL
-  value: postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)
-{{ end }}
-
 {{ else }}
-
-{{ if .Values.argus.databaseUrl }}
-- name: DATABASE_URL
-  value: {{ .Values.argus.databaseUrl | quote }}
-{{ else }}
-- name: DATABASE_USERNAME
-  value: {{ .Values.argus.databaseUsername | quote }}
 - name: DATABASE_PASSWORD
   value: {{ .Values.argus.databasePassword | quote }}
+{{ end }}
 - name: DATABASE_URL
   value: postgresql://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)
-{{ end }}
-
 {{ end }}
 
-{{ if .Values.argus.rtExistingSecret }}
+{{ if and .Values.argus.rtExistingSecret .Values.argus.secretKeys.rtTokenKey }}
 - name: ARGUS_RT_TOKEN
   valueFrom:
     secretKeyRef:
