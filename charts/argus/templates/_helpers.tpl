@@ -114,7 +114,7 @@ Create the name of the service account to use
     secretKeyRef:
       name: {{ .Values.argus.argusExistingSecret | quote }}
       key: {{ .Values.argus.secretKeys.argusPasswordKey | quote }}
-{{ else if .Values.argus.argusUsername and .Values.argus.argusPassword }}
+{{ else if and .Values.argus.argusUsername .Values.argus.argusPassword }}
 - name: ADMIN_USERNAME
   value: {{ .Values.argus.argusUsername | quote }}
 - name: ADMIN_PASSWORD
